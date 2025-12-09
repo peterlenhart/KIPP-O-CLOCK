@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>KIP O’CLOCK – Spiel-App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1120;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      padding: 10px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: #020617;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: row;
+    }
+
+    /* ---------- linke Spalte: Chats ---------- */
+    .sidebar {
+      width: 38%;
+      min-width: 260px;
+      border-right: 1px solid rgba(148,163,184,0.4);
+      display: flex;
+      flex-direction: column;
+      background: #020617;
+    }
+
+    .sidebar-header {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(148,163,184,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .logo-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .logo-sub {
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+
+    .sidebar-header .clock-icon {
+      font-size: 1.4rem;
+    }
+
+    .chat-list {
+      list-style: none;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(15,23,42,0.9);
+      transition: background 0.15s ease;
+    }
+
+    .chat-item:hover {
+      background: #020617;
+    }
+
+    .chat-item.active {
+      background: linear-gradient(90deg, #0f172a, #020617);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #020617;
+      flex-shrink: 0;
+      font-size: 1.1rem;
+    }
+
+    .avatar-1 { background: #fbbf24; }  /* KIP O’CLOCK (goldgelb) */
+    .avatar-2 { background: #34d399; }  /* Lara – grün */
+    .avatar-3 { background: #60a5fa; }  /* Norbert – blau */
+    .avatar-4 { background: #f97316; }  /* Mama – orange */
+    .avatar-5 { background: #f87171; }  /* Opa – rot */
+    .avatar-6 { background: #a855f7; }  /* Elke – violett */
+    .avatar-7 { background: #22c55e; }  /* Selina – extra, falls gebraucht */
+
+    .chat-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .chat-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      flex-shrink: 0;
+      margin-left: 6px;
+    }
+
+    .chat-preview {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .unread-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0;
+    }
+
+    .unread-dot.hidden {
+      display: none;
+    }
+
+    /* ---------- rechte Spalte: Konversation ---------- */
+    .conversation {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+    }
+
+    .conv-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(148,163,184,0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .conv-name {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .conv-status {
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+
+    .conv-body {
+      flex: 1;
+      padding: 12px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .score-strip {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 10px 8px;
+      margin-bottom: 6px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-size: 0.8rem;
+      color: #cbd5f5;
+    }
+
+    .score-strip span strong {
+      color: #e5ff4a;
+    }
+
+    .system-note {
+      align-self: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-bottom: 2px;
+      text-align: center;
+    }
+
+    .bubble {
+      max-width: 80%;
+      padding: 10px 12px;
+      border-radius: 16px;
+      line-height: 1.45;
+      font-size: 0.95rem;
+    }
+
+    .bubble-kip {
+      background: #0f172a;
+      border: 1px solid rgba(148,163,184,0.6);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble-friend {
+      background: #111827;
+      border: 1px solid rgba(148,163,184,0.4);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble-player {
+      background: #22c55e;
+      color: #022c22;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+
+    .conv-footer {
+      padding: 10px 16px 14px;
+      border-top: 1px solid rgba(148,163,184,0.4);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #020617;
+    }
+
+    .conv-footer button {
+      flex: 1;
+      min-width: 130px;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, opacity 0.1s ease-out;
+    }
+
+    .btn-primary {
+      background: #22c55e;
+      color: #022c22;
+      box-shadow: 0 0 16px rgba(34,197,94,0.45);
+    }
+
+    .btn-secondary {
+      background: #f97316;
+      color: #451a03;
+      box-shadow: 0 0 16px rgba(249,115,22,0.4);
+    }
+
+    .conv-footer button:active:not(:disabled) {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 0 3px rgba(15,23,42,0.9);
+    }
+
+    .conv-footer button:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .helper-text {
+      width: 100%;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 720px) {
+      .app {
+        flex-direction: column;
+        max-width: 420px;
+      }
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        max-height: 260px;
+      }
+      .conversation {
+        border-top: 1px solid rgba(148,163,184,0.4);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar mit KIP O’CLOCK + 5 Freunden -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div>
+        <div class="logo-title">KIP O’CLOCK</div>
+        <div class="logo-sub">Spiel-Messenger</div>
+      </div>
+      <div class="clock-icon">🕒</div>
+    </div>
+
+    <ul class="chat-list" id="chatList">
+      <!-- KIP O’CLOCK – Systemchat -->
+      <li class="chat-item active" data-chat-id="rules">
+        <div class="avatar avatar-1">K</div>
+        <div class="chat-main">
+          <div class="chat-name-row">
+            <div class="chat-name">KIP O’CLOCK</div>
+            <div class="chat-time" id="rulesTime">neu</div>
+          </div>
+          <div class="chat-preview" id="rulesPreview">
+            <strong>Neue Spielnachricht: Sei pünktlich!</strong>
+          </div>
+        </div>
+        <div class="unread-dot" id="rulesUnread"></div>
+      </li>
+
+      <!-- Freunde – werden gleich per JS mit Zeiten befüllt -->
+      <li class="chat-item" data-chat-id="lara">
+        <div class="avatar avatar-2">L</div>
+        <div class="chat-main">
+          <div class="chat-name-row">
+            <div class="chat-name">Lara</div>
+            <div class="chat-time friend-time"></div>
+          </div>
+          <div class="chat-preview friend-preview">
+            Neue Nachricht – noch nicht geöffnet.
+          </div>
+        </div>
+        <div class="unread-dot"></div>
+      </li>
+
+      <li class="chat-item" data-chat-id="norbert">
+        <div class="avatar avatar-3">N</div>
+        <div class="chat-main">
+          <div class="chat-name-row">
+            <div class="chat-name">Norbert</div>
+            <div class="chat-time friend-time"></div>
+          </div>
+          <div class="chat-preview friend-preview">
+            Neue Nachricht – noch nicht geöffnet.
+          </div>
+        </div>
+        <div class="unread-dot"></div>
+      </li>
+
+      <li class="chat-item" data-chat-id="mama">
+        <div class="avatar avatar-4">M</div>
+        <div class="chat-main">
+          <div class="chat-name-row">
+            <div class="chat-name">Mama</div>
+            <div class="chat-time friend-time"></div>
+          </div>
+          <div class="chat-preview friend-preview">
+            Neue Nachricht – noch nicht geöffnet.
+          </div>
+        </div>
+        <div class="unread-dot"></div>
+      </li>
+
+      <li class="chat-item" data-chat-id="opa">
+        <div class="avatar avatar-5">O</div>
+        <div class="chat-main">
+          <div class="chat-name-row">
+            <div class="chat-name">Opa</div>
+            <div class="chat-time friend-time"></div>
+          </div>
+          <div class="chat-preview friend-preview">
+            Neue Nachricht – noch nicht geöffnet.
+          </div>
+        </div>
+        <div class="unread-dot"></div>
+      </li>
+
+      <li class="chat-item" data-chat-id="elke">
+        <div class="avatar avatar-6">E</div>
+        <div class="chat-main">
+          <div class="chat-name-row">
+            <div class="chat-name">Elke</div>
+            <div class="chat-time friend-time"></div>
+          </div>
+          <div class="chat-preview friend-preview">
+            Neue Nachricht – noch nicht geöffnet.
+          </div>
+        </div>
+        <div class="unread-dot"></div>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Konversations-Bereich -->
+  <main class="conversation">
+    <header class="conv-header">
+      <div class="avatar avatar-1" id="convAvatar">K</div>
+      <div>
+        <div class="conv-name" id="convName">KIP O’CLOCK</div>
+        <div class="conv-status" id="convStatus">Systemnachricht – Spielstart</div>
+      </div>
+    </header>
+
+    <section class="conv-body" id="convBody">
+      <!-- Score wird per JS eingesetzt -->
+    </section>
+
+    <footer class="conv-footer" id="convFooter">
+      <!-- Buttons werden per JS umgeschaltet -->
+    </footer>
+  </main>
+
+</div>
+
+<script>
+  // ----------- Hilfsfunktionen -----------
+
+  function generateTimes() {
+    // Viertelstunden von 08:00 bis 19:45
+    const times = [];
+    for (let h = 8; h <= 19; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        const hh = h.toString().padStart(2, "0");
+        const mm = m.toString().padStart(2, "0");
+        times.push(`${hh}:${mm}`);
+      }
+    }
+    return times;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ----------- Spielzustand -----------
+
+  const friends = [
+    { id: "lara",    name: "Lara" },
+    { id: "norbert", name: "Norbert" },
+    { id: "mama",    name: "Mama" },
+    { id: "opa",     name: "Opa" },
+    { id: "elke",    name: "Elke" }
+  ];
+
+  const allTimes = shuffle(generateTimes());
+  const messages = {};
+
+  // Wir geben den 5 Freunden je eine eigene Uhrzeit
+  friends.forEach((f, index) => {
+    messages[f.id] = {
+      friendId: f.id,
+      friendName: f.name,
+      time: allTimes[index],   // z.B. "10:45"
+      opened: false,
+      answered: false,
+      onTime: false
+    };
+  });
+
+  let totalPoints = 0;
+  let answeredCount = 0;
+  const totalMessages = friends.length;
+
+  let currentChatId = "rules";   // Start mit KIP O’CLOCK
+
+  // ----------- DOM-Referenzen -----------
+
+  const chatListEl    = document.getElementById("chatList");
+  const convBodyEl    = document.getElementById("convBody");
+  const convFooterEl  = document.getElementById("convFooter");
+  const convNameEl    = document.getElementById("convName");
+  const convStatusEl  = document.getElementById("convStatus");
+  const convAvatarEl  = document.getElementById("convAvatar");
+  const rulesPreview  = document.getElementById("rulesPreview");
+  const rulesUnreadEl = document.getElementById("rulesUnread");
+
+  // ----------- UI aktualisieren -----------
+
+  function renderScoreStrip() {
+    const html = `
+      <div class="score-strip">
+        <span>Pünktlichkeitspunkte: <strong>${totalPoints}</strong></span>
+        <span>Nachrichten: <strong>${answeredCount}</strong> / ${totalMessages}</span>
+      </div>
+    `;
+    return html;
+  }
+
+  function showRulesConversation() {
+    currentChatId = "rules";
+    convNameEl.textContent = "KIP O’CLOCK";
+    convStatusEl.textContent = "Systemnachricht – Spielstart";
+    convAvatarEl.textContent = "K";
+    convAvatarEl.className = "avatar avatar-1";
+
+    convBodyEl.innerHTML = `
+      ${renderScoreStrip()}
+      <div class="system-note">Neue Nachricht von KIP O’CLOCK</div>
+      <div class="bubble bubble-kip">
+        <strong>Hallo!</strong><br><br>
+        Wenn du an der Reihe bist, öffne eine deiner Nachrichten.<br>
+        Lies die Uhrzeit im Text.<br><br>
+        <strong>Sag vor dem Kippen an</strong>, wie oft du kippen möchtest
+        (1&nbsp;bis&nbsp;12). Kippe den Würfel anschließend genau so oft
+        <strong>im Uhrzeigersinn</strong>.<br><br>
+        Triffst du die Uhrzeit, bekommst du einen
+        <strong>Pünktlichkeitspunkt</strong>.<br><br>
+        Wenn die Uhrzeit schon passt, musst du nicht kippen –
+        du kannst sofort „Ich bin da“ wählen.<br><br>
+        Wichtig: Die <strong>Kippanzahl muss vorher angesagt</strong> werden.<br>
+        <em>12&nbsp;Kippbewegungen entsprechen einer vollen Runde –
+        danach liegt der Würfel wieder wie am Anfang.</em>
+      </div>
+    `;
+
+    convFooterEl.innerHTML = `
+      <button class="btn-primary" id="btnLos">Los geht’s</button>
+      <div class="helper-text">
+        Tippe „Los geht’s“, um ins eigentliche Spiel zu wechseln.
+      </div>
+    `;
+
+    document.getElementById("btnLos").onclick = () => {
+      // KIP O’CLOCK als „gelesen“ markieren
+      rulesPreview.innerHTML = "Spielregeln gelesen. Öffne jetzt eine Nachricht.";
+      rulesUnreadEl.classList.add("hidden");
+      // automatisch erste Freund-Nachricht öffnen
+      openFriendChat(friends[0].id);
+      setActiveChatItem(friends[0].id);
+    };
+  }
+
+  function friendAvatarClass(id) {
+    switch (id) {
+      case "lara":    return "avatar avatar-2";
+      case "norbert": return "avatar avatar-3";
+      case "mama":    return "avatar avatar-4";
+      case "opa":     return "avatar avatar-5";
+      case "elke":    return "avatar avatar-6";
+      default:        return "avatar avatar-7";
+    }
+  }
+
+  function openFriendChat(friendId) {
+    currentChatId = friendId;
+    const msg = messages[friendId];
+    if (!msg) return;
+
+    convNameEl.textContent = msg.friendName;
+    convStatusEl.textContent = "Neue Nachricht – KIP O’CLOCK";
+    convAvatarEl.textContent = msg.friendName[0];
+    convAvatarEl.className = friendAvatarClass(friendId);
+
+    const timeText = msg.time + " Uhr";
+
+    // Nachricht als geöffnet markieren
+    if (!msg.opened) {
+      msg.opened = true;
+    }
+
+    const friendBubble = `
+      <div class="system-note">Nachricht von ${msg.friendName}</div>
+      <div class="bubble bubble-friend">
+        <strong>Neue Nachricht:</strong><br><br>
+        Treffen um <strong>${timeText}</strong>.<br>
+        Sei pünktlich!<br><br>
+        Kipp in deiner Box so, wie du es für richtig hältst –
+        und wähle danach deine Antwort unten.
+      </div>
+    `;
+
+    let playerBubble = "";
+    if (msg.answered) {
+      if (msg.onTime) {
+        playerBubble = `
+          <div class="bubble bubble-player">
+            Ich bin da. ✔<br>
+            (Pünktlichkeitspunkt erhalten.)
+          </div>
+        `;
+      } else {
+        playerBubble = `
+          <div class="bubble bubble-player">
+            Hab’s nicht geschafft. ❌
+          </div>
+        `;
+      }
+    }
+
+    convBodyEl.innerHTML = `
+      ${renderScoreStrip()}
+      ${friendBubble}
+      ${playerBubble}
+    `;
+
+    if (msg.answered) {
+      convFooterEl.innerHTML = `
+        <div class="helper-text">
+          Nachricht wurde bereits beantwortet. Wähle einen anderen Chat.
+        </div>
+      `;
+    } else {
+      convFooterEl.innerHTML = `
+        <button class="btn-primary"  id="btnDa">Ich bin da</button>
+        <button class="btn-secondary" id="btnFail">Hab’s nicht geschafft</button>
+        <div class="helper-text">
+          Kippe zuerst den Würfel. Wenn du fertig bist, wähle deine Antwort.
+        </div>
+      `;
+
+      document.getElementById("btnDa").onclick = () => handleAnswer(friendId, true);
+      document.getElementById("btnFail").onclick = () => handleAnswer(friendId, false);
+    }
+  }
+
+  function handleAnswer(friendId, onTime) {
+    const msg = messages[friendId];
+    if (!msg || msg.answered) return;
+
+    msg.answered = true;
+    msg.onTime = onTime;
+
+    answeredCount++;
+
+    if (onTime) {
+      totalPoints++;
+    }
+
+    // Sidebar-Vorschau & Unread-Dot aktualisieren
+    const item = chatListEl.querySelector(`.chat-item[data-chat-id="${friendId}"]`);
+    if (item) {
+      const preview = item.querySelector(".friend-preview");
+      const timeEl = item.querySelector(".friend-time");
+      const dot = item.querySelector(".unread-dot");
+      timeEl.textContent = msg.time;
+      if (onTime) {
+        preview.textContent = "Antwort gesendet: Ich bin da.";
+      } else {
+        preview.textContent = "Antwort gesendet: Hab’s nicht geschafft.";
+      }
+      dot.classList.add("hidden");
+    }
+
+    // Konversation neu rendern
+    openFriendChat(friendId);
+
+    // Spielende?
+    if (answeredCount >= totalMessages) {
+      const endNote = document.createElement("div");
+      endNote.className = "system-note";
+      endNote.innerHTML =
+        `Runde beendet: Du hast <strong>${totalPoints}</strong> Pünktlichkeitspunkte erzielt.`;
+      convBodyEl.appendChild(endNote);
+    }
+  }
+
+  function setActiveChatItem(chatId) {
+    const items = chatListEl.querySelectorAll(".chat-item");
+    items.forEach((li) => {
+      if (li.dataset.chatId === chatId) {
+        li.classList.add("active");
+      } else {
+        li.classList.remove("active");
+      }
+    });
+  }
+
+  // ----------- Initialisierung -----------
+
+  function initSidebarTimes() {
+    // in der Liste die Uhrzeiten neben den Freunden anzeigen
+    friends.forEach((f) => {
+      const item = chatListEl.querySelector(`.chat-item[data-chat-id="${f.id}"]`);
+      if (!item) return;
+      const timeEl = item.querySelector(".friend-time");
+      const msg = messages[f.id];
+      if (timeEl && msg) {
+        timeEl.textContent = msg.time;  // z.B. "10:30"
+      }
+    });
+  }
+
+  function attachChatClickHandlers() {
+    chatListEl.querySelectorAll(".chat-item").forEach((li) => {
+      li.addEventListener("click", () => {
+        const id = li.dataset.chatId;
+        if (!id) return;
+
+        setActiveChatItem(id);
+
+        if (id === "rules") {
+          showRulesConversation();
+        } else {
+          openFriendChat(id);
+        }
+      });
+    });
+  }
+
+  function init() {
+    initSidebarTimes();
+    attachChatClickHandlers();
+    showRulesConversation();  // Start mit geöffneter KIP-O’CLOCK Nachricht
+  }
+
+  init();
+</script>
+
+</body>
+</html>
