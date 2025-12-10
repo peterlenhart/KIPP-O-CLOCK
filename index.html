@@ -121,10 +121,6 @@
       background: rgba(15, 23, 42, 0.85);
     }
 
-    .thread-item.read {
-      opacity: 0.75;
-    }
-
     .avatar-circle {
       flex-shrink: 0;
       width: 40px;
@@ -172,6 +168,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: #e5e7eb;
     }
 
     .thread-time {
@@ -188,6 +185,15 @@
       text-overflow: ellipsis;
     }
 
+    /* Gelesene Nachrichten deutlich inaktiver */
+    .thread-item.read .thread-name {
+      font-weight: 400;
+      color: #9ca3af;
+    }
+    .thread-item.read .thread-preview {
+      color: #6b7280;
+    }
+
     .thread-unread-dot {
       width: 8px;
       height: 8px;
@@ -198,6 +204,24 @@
 
     .thread-item.read .thread-unread-dot {
       visibility: hidden;
+    }
+
+    /* Ergebnis-Badge im Vorschau-Text */
+    .thread-result {
+      margin-left: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .thread-result-success {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+    .thread-result-fail {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f97373;
     }
 
     /* Overlay für geöffnete Nachricht */
@@ -227,25 +251,25 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      background: #ffffff; /* weiße Basis bleibt */
+      background: #ffffff; /* Basis – wird pro Theme leicht getönt */
     }
 
-    /* Rahmenfarbe: Border + 20%-Tönung über Weiß (vorgeblendet, sehr hell) */
+    /* Getönter Kartenhintergrund (20% Masterfarbe über Weiß) */
     .message-card.theme-violet {
       border: 2px solid rgba(164, 27, 133, 0.2);
-      background: rgb(237, 209, 231); /* Weiß + 20% Violett */
+      background: rgb(237, 209, 231);
     }
     .message-card.theme-blue {
       border: 2px solid rgba(0, 107, 179, 0.2);
-      background: rgb(204, 225, 240); /* Weiß + 20% Blau */
+      background: rgb(204, 225, 240);
     }
     .message-card.theme-green {
       border: 2px solid rgba(0, 166, 82, 0.2);
-      background: rgb(204, 237, 220); /* Weiß + 20% Grün */
+      background: rgb(204, 237, 220);
     }
     .message-card.theme-yellow {
       border: 2px solid rgba(249, 150, 30, 0.2);
-      background: rgb(254, 234, 210); /* Weiß + 20% Gelb */
+      background: rgb(254, 234, 210);
     }
 
     .message-close {
@@ -316,12 +340,12 @@
       color: #6b7280;
     }
 
-    /* Text-Fläche mit 8% Farbanteil der Avatarfarbe */
+    /* Text-Fläche */
 
     .message-body-outer {
       border-radius: 18px;
       padding: 10px 10px 8px;
-      background: #ffffff; /* weiße Innenfläche bleibt */
+      background: #ffffff;
     }
 
     .message-card.theme-violet .message-body-inner {
@@ -351,6 +375,22 @@
 
     .message-body-inner p:last-child {
       margin-bottom: 0;
+    }
+
+    /* Größere Typo für Termin-Nachrichten */
+    .message-body-inner.friend-message {
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+    .friend-message .msg-headline {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .friend-message .msg-time-line {
+      margin-bottom: 6px;
+    }
+    .friend-message .msg-time {
+      font-size: 1.08rem;
     }
 
     .message-actions {
@@ -555,9 +595,10 @@
           preview: `Treffen um ${time}. ${phrase}`,
           status: "unread", // unread | success | fail
           text: `
-<p>Neue Nachricht.</p>
-<p>Treffen um <strong>${time}</strong>. ${phrase}</p>
-<p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten, liest die Uhrzeit und sagst an, wie oft du den Würfel im Uhrzeigersinn kippen möchtest. Danach wird gekippt.</p>
+<p class="msg-headline">Neue Nachricht.</p>
+<p class="msg-time-line">Treffen um <strong class="msg-time">${time}</strong>. ${phrase}</p>
+<p>Sag an, wie oft du kippen willst.</p>
+<p>Denk daran: Nach zwölfmal Kippen liegt der Würfel wieder wie am Anfang. Zwölfmal Kippen ist wie gar nicht kippen.</p>
 <p>Wenn deine Stundenanzeige nach dem Kippen an der richtigen Minutenangabe liegt, klickst du „Ich bin da“. Wenn nicht, klickst du „Hab's nicht geschafft“.</p>
           `.trim()
         });
@@ -588,7 +629,6 @@
       threadListEl.innerHTML = "";
 
       threads.forEach(thread => {
-        // KIPP-BOX + Freunde alle in einer Liste
         const item = document.createElement("div");
         item.className = "thread-item";
         if (thread.status !== "unread") {
@@ -618,7 +658,22 @@
 
         const previewEl = document.createElement("div");
         previewEl.className = "thread-preview";
-        previewEl.textContent = thread.preview;
+
+        const previewText = document.createElement("span");
+        previewText.textContent = thread.preview;
+        previewEl.appendChild(previewText);
+
+        if (thread.type === "friend" && thread.status !== "unread") {
+          const badge = document.createElement("span");
+          badge.className =
+            "thread-result " +
+            (thread.status === "success"
+              ? "thread-result-success"
+              : "thread-result-fail");
+          badge.textContent =
+            thread.status === "success" ? "pünktlich" : "nicht geschafft";
+          previewEl.appendChild(badge);
+        }
 
         main.appendChild(nameRow);
         main.appendChild(previewEl);
@@ -657,13 +712,16 @@
       msgAvatarEl.textContent = thread.initial;
       msgNameEl.textContent = thread.name;
 
+      // Typo-Klasse für Freund:innen-Nachrichten
+      msgTextEl.classList.toggle("friend-message", thread.type === "friend");
+
       if (thread.type === "kippbox") {
         msgMetaEl.textContent = "Spielerklärung";
         msgFooterHintEl.textContent = "Lies diese Nachricht genau. Du kannst sie jederzeit wieder öffnen.";
         msgActionsEl.style.display = "none";
       } else {
         msgMetaEl.textContent = `Treffen um ${thread.timeLabel}`;
-        msgFooterHintEl.textContent = "Tippe eine der Antworten, nachdem du am echten Spielbrett gekippt hast.";
+        msgFooterHintEl.textContent = ""; // kein Hinweistext mehr
         msgActionsEl.style.display = "flex";
       }
 
@@ -673,15 +731,21 @@
     }
 
     function closeOverlay() {
+      // Termin-Nachrichten dürfen beim ersten Mal NICHT ohne Antwort geschlossen werden
+      if (currentThread &&
+          currentThread.type === "friend" &&
+          currentThread.status === "unread") {
+        return;
+      }
       overlayEl.classList.add("hidden");
       currentThread = null;
       renderThreads();
     }
 
     function setThreadStatus(thread, status) {
-      if (thread.status === "success") {
-        // bereits Punkt bekommen, nicht nochmal erhöhen
-      } else if (status === "success" && thread.status !== "success") {
+      const wasSuccess = thread.status === "success";
+
+      if (!wasSuccess && status === "success") {
         score += 1;
         updateScoreDisplay();
       }
