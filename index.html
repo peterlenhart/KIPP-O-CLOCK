@@ -7,18 +7,16 @@
 
   <style>
     :root {
-      --kc-bg: #020617;
-      --kc-surface: #020617;
-      --kc-list-divider: #1f2933;
+      --koc-bg: #050814;
+      --koc-card: #0b1120;
+      --koc-border: #1f2937;
+      --koc-text-main: #f9fafb;
+      --koc-text-muted: #9ca3af;
 
-      --kc-blue: rgb(0, 101, 171);
-      --kc-violet: rgb(170, 0, 120);
-      --kc-green: rgb(59, 165, 43);
-      --kc-orange: rgb(242, 150, 0);
-
-      --kc-text-main: #e5e7eb;
-      --kc-text-muted: #94a3b8;
-      --kc-text-strong: #f9fafb;
+      --koc-blue: rgb(0, 101, 171);
+      --koc-violet: rgb(170, 0, 120);
+      --koc-green: rgb(59, 165, 43);
+      --koc-orange: rgb(242, 150, 0);
     }
 
     * {
@@ -28,327 +26,287 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
-      color: var(--kc-text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%);
+      color: var(--koc-text-main);
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 16px 10px;
+      align-items: stretch;
+      padding: 12px;
     }
 
     .app {
       width: 100%;
       max-width: 480px;
-      background: var(--kc-surface);
+      background: var(--koc-bg);
       border-radius: 20px;
-      border: 1px solid rgba(15,23,42,0.9);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.75);
+      border: 1px solid var(--koc-border);
+      box-shadow: 0 0 32px rgba(0, 0, 0, 0.75);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* Header */
-
     .app-header {
-      padding: 14px 14px 8px;
-      border-bottom: 1px solid rgba(30,41,59,0.9);
-      background: linear-gradient(135deg, #020617 0, #020617 35%, #0b1120 100%);
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--koc-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .app-title-block {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .app-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
-
     .app-title {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 800;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--kc-orange);
     }
 
-    .app-sub {
-      font-size: 0.78rem;
-      color: var(--kc-text-muted);
+    .app-subtitle {
+      font-size: 0.75rem;
+      color: var(--koc-text-muted);
     }
 
-    .score-row {
-      margin-top: 6px;
+    .points-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--koc-border);
+      font-size: 0.75rem;
+      color: var(--koc-text-muted);
+      white-space: nowrap;
+    }
+
+    .points-pill strong {
+      color: #facc15;
+    }
+
+    .messenger {
+      flex: 1;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: var(--kc-text-muted);
+      flex-direction: column;
+      background: radial-gradient(circle at top, #111827 0, #020617 60%);
     }
-
-    .score-value {
-      font-weight: 700;
-      color: #fbbf24;
-      font-size: 0.98rem;
-    }
-
-    /* Liste */
 
     .chat-list {
-      flex: 1;
+      list-style: none;
+      padding: 6px 8px 8px;
       overflow-y: auto;
-      background: #020617;
+      max-height: calc(100vh - 120px);
     }
 
-    .chat-row {
+    .chat-item {
       display: flex;
       align-items: center;
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(30,41,59,0.8);
-      cursor: pointer;
       gap: 10px;
+      padding: 8px 6px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.12s ease-out;
     }
 
-    .chat-row:last-child {
-      border-bottom: none;
+    .chat-item:hover {
+      background: rgba(15, 23, 42, 0.8);
     }
 
-    .chat-row:hover {
-      background: rgba(15,23,42,0.85);
-    }
-
-    .chat-row.read {
+    .chat-item.read {
       opacity: 0.8;
     }
 
     .avatar {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 999px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       color: #020617;
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.7);
       flex-shrink: 0;
-      position: relative;
     }
 
-    .avatar.blue   { background: var(--kc-blue); }
-    .avatar.violet { background: var(--kc-violet); }
-    .avatar.green  { background: var(--kc-green); }
-    .avatar.orange { background: var(--kc-orange); }
-
-    .avatar-unread-dot {
-      position: absolute;
-      bottom: -2px;
-      right: -2px;
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #22c55e;
-      border: 2px solid #020617;
-    }
-
-    .chat-main {
+    .chat-texts {
       flex: 1;
       min-width: 0;
     }
 
-    .chat-top {
+    .chat-top-row {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       margin-bottom: 2px;
     }
 
     .chat-name {
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      color: var(--kc-text-strong);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .chat-name.unread {
-      font-weight: 800;
+    .chat-time {
+      font-size: 0.7rem;
+      color: var(--koc-text-muted);
+      white-space: nowrap;
+      margin-left: 6px;
     }
 
-    .chat-meta {
-      font-size: 0.68rem;
-      color: var(--kc-text-muted);
-      margin-left: 6px;
-      white-space: nowrap;
+    .chat-preview-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .chat-preview {
-      font-size: 0.82rem;
-      color: var(--kc-text-muted);
+      font-size: 0.8rem;
+      color: var(--koc-text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .badge-new {
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      flex-shrink: 0;
+    }
+
+    .status-tag {
       font-size: 0.7rem;
       padding: 2px 6px;
       border-radius: 999px;
-      background: rgba(34,197,94,0.15);
-      color: #bbf7d0;
-      margin-left: 8px;
+      border: 1px solid var(--koc-border);
+      color: var(--koc-text-muted);
+      white-space: nowrap;
     }
 
-    .badge-done {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(37,99,235,0.2);
-      color: #bfdbfe;
-      margin-left: 8px;
+    .status-ok {
+      color: #16a34a;
+      border-color: #16a34a;
     }
 
-    .badge-miss {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(148,163,184,0.18);
-      color: #cbd5f5;
-      margin-left: 8px;
+    .status-fail {
+      color: #f97316;
+      border-color: #f97316;
     }
 
-    /* Overlay */
-
-    .overlay {
+    /* Overlays */
+    .overlay,
+    .message-view {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.72);
       display: none;
       justify-content: center;
       align-items: center;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.85);
       z-index: 40;
-      padding: 18px 10px;
     }
 
-    .overlay.visible {
-      display: flex;
-    }
-
+    .overlay-inner,
     .msg-card {
       width: 100%;
-      max-width: 420px;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.9);
-      border: 1px solid rgba(15,23,42,0.9);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .msg-header {
-      padding: 10px 12px 9px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid rgba(15,23,42,0.85);
+      max-width: 480px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 16px 16px 14px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      color: #020617;
       position: relative;
     }
 
-    .msg-header-avatar {
-      width: 40px;
-      height: 40px;
+    .overlay-header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .overlay-avatar {
+      width: 46px;
+      height: 46px;
       border-radius: 999px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1.2rem;
       color: #020617;
       flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.15);
     }
 
-    .msg-header-main {
+    .overlay-title-block {
       flex: 1;
+      min-width: 0;
     }
 
-    .msg-header-name {
-      font-size: 0.95rem;
+    .overlay-name {
+      font-size: 1rem;
       font-weight: 700;
-      color: #020617;
+      margin-bottom: 2px;
     }
 
-    .msg-header-sub {
-      font-size: 0.78rem;
-      color: #111827;
-      opacity: 0.9;
+    .overlay-subline {
+      font-size: 0.8rem;
+      color: #4b5563;
     }
 
-    .msg-close {
-      position: absolute;
-      top: 9px;
-      right: 10px;
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: none;
-      background: rgba(15,23,42,0.4);
-      color: #020617;
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .msg-close:hover {
-      background: rgba(15,23,42,0.65);
-    }
-
-    .msg-body {
-      padding: 12px 14px 10px;
-      font-size: 0.94rem;
+    .overlay-body {
+      margin-top: 6px;
+      font-size: 0.9rem;
       line-height: 1.45;
-      max-height: 290px;
+      color: #111827;
+      max-height: 60vh;
       overflow-y: auto;
     }
 
-    .msg-body p + p {
-      margin-top: 6px;
+    .overlay-body p {
+      margin-bottom: 8px;
     }
 
-    .msg-footer {
-      padding: 10px 12px 12px;
-      border-top: 1px solid rgba(15,23,42,0.8);
+    .overlay-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .overlay-footer {
+      margin-top: 12px;
       display: flex;
+      justify-content: flex-end;
       gap: 10px;
     }
 
     .btn {
-      border: none;
       border-radius: 999px;
-      padding: 10px 10px;
+      padding: 8px 14px;
+      border: none;
       font-size: 0.9rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      flex: 1;
-      text-align: center;
       white-space: nowrap;
     }
 
-    .btn-primary {
-      background: #22c55e;
-      color: #022c22;
-      border: 1px solid #16a34a;
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: #111827;
-      border: 1px solid rgba(15,23,42,0.8);
+    .btn-primary {
+      background: #0ea5e9;
+      color: #e0f2fe;
     }
 
     .btn-primary:active,
@@ -357,409 +315,455 @@
       filter: brightness(0.95);
     }
 
-    .btn-full {
-      flex: 1;
+    .close-icon {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #6b7280;
     }
 
-    .msg-footer.intro-footer {
+    .close-icon:hover {
+      color: #111827;
+    }
+
+    /* Message view */
+    .msg-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .msg-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
       justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #020617;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
     }
 
-    .msg-footer.intro-footer .btn {
-      max-width: 200px;
+    .msg-header-text {
+      flex: 1;
+      min-width: 0;
     }
 
-    @media (max-width: 400px) {
-      .chat-row { padding: 8px 10px; }
-      .avatar { width: 36px; height: 36px; font-size: 0.98rem; }
-      .msg-card { max-width: 100%; }
+    .msg-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .msg-time-line {
+      font-size: 0.8rem;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+
+    .msg-body {
+      margin-top: 8px;
+      padding: 10px 10px 8px;
+      border-radius: 14px;
+      background: #f9fafb;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #111827;
+    }
+
+    .msg-body p {
+      margin-bottom: 6px;
+    }
+
+    .msg-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .msg-buttons {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .msg-btn-ok {
+      flex: 1;
+      background: #22c55e;
+      color: #022c22;
+    }
+
+    .msg-btn-fail {
+      flex: 1;
+      background: #f97316;
+      color: #451a03;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="app-header">
-      <div class="app-title-row">
+      <div class="app-title-block">
         <div class="app-title">KIPP O'CLOCK</div>
+        <div class="app-subtitle">Pünktlichkeitspunkte im Messenger-Stil</div>
       </div>
-      <div class="app-sub">
-        Pünktlich mit jedem Kipp – die App verwaltet nur Uhrzeit, Punkte und Züge.
-      </div>
-      <div class="score-row">
-        <div>Pünktlichkeitspunkte: <span id="scoreValue" class="score-value">0</span></div>
-        <div>Nachrichten beantwortet: <span id="answeredCount">0</span>/6</div>
+      <div class="points-pill">
+        Pünktlichkeitspunkte: <strong id="points-total">0</strong> / 6
       </div>
     </header>
 
-    <main class="chat-list" id="chatList">
-      <!-- Nachrichten werden per JS eingefügt -->
+    <main class="messenger">
+      <ul class="chat-list" id="chat-list">
+        <!-- Chats werden per JS eingefügt -->
+      </ul>
     </main>
   </div>
 
-  <!-- Overlay für Nachrichten & KIPPBOX -->
-  <div class="overlay" id="overlay">
-    <div class="msg-card" id="msgCard">
-      <div class="msg-header" id="msgHeader">
-        <div class="msg-header-avatar" id="msgAvatar"></div>
-        <div class="msg-header-main">
-          <div class="msg-header-name" id="msgName"></div>
-          <div class="msg-header-sub" id="msgSub"></div>
+  <!-- KIPPBOX-Erklärungs-Overlay -->
+  <div class="overlay" id="kippbox-overlay">
+    <div class="overlay-inner">
+      <div class="close-icon" id="kippbox-close">✖</div>
+      <div class="overlay-header">
+        <div class="overlay-avatar" id="kippbox-avatar">KB</div>
+        <div class="overlay-title-block">
+          <div class="overlay-name">KIPPBOX</div>
+          <div class="overlay-subline">Spielerklärung für KIPP O'CLOCK</div>
         </div>
-        <button class="msg-close" id="msgCloseBtn" aria-label="Nachricht schließen">×</button>
       </div>
-      <div class="msg-body" id="msgBody"></div>
-      <div class="msg-footer" id="msgFooter">
-        <!-- Buttons per JS -->
+      <div class="overlay-body">
+        <p>Hallo, ich bin deine KIPPBOX.</p>
+        <p>Mein Rand zeigt, wie bei einer Uhr, die Minutenangaben in Viertelstunden. Der Würfel gibt die Stunden an.</p>
+        <p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten und liest die Uhrzeit im Text. Sag danach an, wie oft du den Würfel im Uhrzeigersinn kippen möchtest.</p>
+        <p>Hinweis: Nach zwölf Kippbewegungen liegt der Würfel wieder so wie am Anfang. (Gar nicht kippen ist zwölfmal kippen.)</p>
+        <p>Nach deiner Ansage kippst du den Würfel genauso oft, wie du angesagt hast. Prüfe dann, ob die richtige Stunde an der richtigen Minutenangabe liegt.</p>
+        <p>Hast du den Termin geschafft, klickst du „Ich bin da“ und bekommst einen Pünktlichkeitspunkt. Wenn nicht, klickst du „Hab's nicht geschafft“ und erhältst keinen Punkt.</p>
+        <p>Schließe die Nachricht wieder, dein Spielzug ist abgeschlossen.</p>
+      </div>
+      <div class="overlay-footer">
+        <button class="btn btn-primary" id="kippbox-ok-btn">Los geht's</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nachrichten-Ansicht -->
+  <div class="message-view hidden" id="message-view">
+    <div class="msg-card" id="msg-card">
+      <div class="close-icon" id="msg-close">✖</div>
+
+      <div class="msg-header">
+        <div class="msg-avatar" id="msg-avatar">A</div>
+        <div class="msg-header-text">
+          <div class="msg-name" id="msg-name">Name</div>
+          <div class="msg-time-line" id="msg-time-line">Treffen um 10:30 Uhr</div>
+        </div>
+      </div>
+
+      <div class="msg-body" id="msg-body">
+        <!-- Text per JS -->
+      </div>
+
+      <div class="msg-buttons">
+        <button class="btn msg-btn-ok" id="btn-ok">Ich bin da</button>
+        <button class="btn msg-btn-fail" id="btn-fail">Hab's nicht geschafft</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ------------------------------
-    // Daten & Konstanten
-    // ------------------------------
-    const NAME_POOL = [
-      "Papa","Mama","Oma","Opa","Lara","Peter","Elke","Selina",
-      "Fabian","Emre","Armin","Nati","Monika"
+    // -----------------------------
+    // Datenbasis
+    // -----------------------------
+    const namesPool = [
+      "Oma", "Opa", "Papa", "Mama",
+      "Lara", "Peter", "Elke", "Selina",
+      "Fabian", "Emre", "Mami",
+      "Armin", "Nati", "Monika"
     ];
 
-    const COLOR_KEYS = ["blue","violet","green","orange"];
-
-    const CLOSING_VARIANTS = [
+    const phrases = [
       "Ich zähle auf dich.",
       "Ich warte auf dich.",
       "Bitte pünktlich."
     ];
 
-    const MINUTE_OPTIONS = ["00","15","30","45"];
+    const colors = [
+      { name: "blue",   value: "rgb(0, 101, 171)" },
+      { name: "violet", value: "rgb(170, 0, 120)" },
+      { name: "green",  value: "rgb(59, 165, 43)" },
+      { name: "orange", value: "rgb(242, 150, 0)" }
+    ];
 
-    const chatListEl      = document.getElementById("chatList");
-    const overlayEl       = document.getElementById("overlay");
-    const msgCardEl       = document.getElementById("msgCard");
-    const msgHeaderEl     = document.getElementById("msgHeader");
-    const msgAvatarEl     = document.getElementById("msgAvatar");
-    const msgNameEl       = document.getElementById("msgName");
-    const msgSubEl        = document.getElementById("msgSub");
-    const msgBodyEl       = document.getElementById("msgBody");
-    const msgFooterEl     = document.getElementById("msgFooter");
-    const msgCloseBtn     = document.getElementById("msgCloseBtn");
+    const MIN_HOUR = 8;   // 08:00
+    const MAX_HOUR = 19;  // 19:45
+    const minutesSteps = ["00", "15", "30", "45"];
 
-    const scoreValueEl    = document.getElementById("scoreValue");
-    const answeredCountEl = document.getElementById("answeredCount");
+    // -----------------------------
+    // State
+    // -----------------------------
+    let chats = [];
+    let currentChatId = null;
+    let points = 0;
 
-    let messages = [];
-    let punctualPoints = 0;
-    let answeredMessages = 0;
-
-    let openedMessageId = null; // null = kein Freund, "intro" = KIPPBOX
-
-    // ------------------------------
+    // -----------------------------
     // Hilfsfunktionen
-    // ------------------------------
+    // -----------------------------
     function randomElement(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    function shuffle(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
+    function randomTime() {
+      const hour = MIN_HOUR + Math.floor(Math.random() * (MAX_HOUR - MIN_HOUR + 1));
+      const mins = randomElement(minutesSteps);
+      const hourStr = hour.toString().padStart(2, "0");
+      return `${hourStr}:${mins}`;
     }
 
-    function formatTime(hour, minutes) {
-      const hh = hour.toString().padStart(2, "0");
-      return hh + ":" + minutes;
+    function getInitial(name) {
+      return name.trim().charAt(0).toUpperCase();
     }
 
-    function updateScoreDisplays() {
-      scoreValueEl.textContent = String(punctualPoints);
-      answeredCountEl.textContent = String(answeredMessages);
-    }
+    function createChats(count = 6) {
+      const usedNames = [];
+      const usedTimes = new Set();
 
-    // ------------------------------
-    // Nachrichten erzeugen
-    // ------------------------------
-    function createRandomMessages() {
-      const shuffledNames = shuffle(NAME_POOL);
-      const chosenNames = shuffledNames.slice(0, 6);
+      for (let i = 0; i < count; i++) {
+        // Name
+        let name;
+        let safety = 0;
+        do {
+          name = randomElement(namesPool);
+          safety++;
+          if (safety > 50) break;
+        } while (usedNames.includes(name));
+        usedNames.push(name);
 
-      messages = chosenNames.map((name, index) => {
-        const colorKey = COLOR_KEYS[index % COLOR_KEYS.length];
+        // Uhrzeit eindeutig in dieser Runde
+        let timeStr;
+        let safetyTime = 0;
+        do {
+          timeStr = randomTime();
+          safetyTime++;
+          if (safetyTime > 100) break;
+        } while (usedTimes.has(timeStr));
+        usedTimes.add(timeStr);
 
-        const hour = 8 + Math.floor(Math.random() * 12); // 8..19
-        const minute = randomElement(MINUTE_OPTIONS);
-        const timeStr = formatTime(hour, minute);
+        // Phrase
+        const phrase = randomElement(phrases);
 
-        const closing = randomElement(CLOSING_VARIANTS);
+        // Farbe
+        const color = colors[i % colors.length];
 
-        const text = `Treffen um ${timeStr}. ${closing}`;
+        const id = "chat_" + i;
 
-        return {
-          id: index,
+        chats.push({
+          id,
           name,
-          colorKey,
+          initial: getInitial(name),
           timeStr,
-          text,
-          opened: false,
-          answered: false,
-          punctual: false
-        };
-      });
+          phrase,
+          color,
+          status: "unread", // unread | ok | fail
+          result: null
+        });
+      }
     }
 
-    // ------------------------------
-    // Liste rendern
-    // ------------------------------
     function renderChatList() {
-      chatListEl.innerHTML = "";
+      const listEl = document.getElementById("chat-list");
+      listEl.innerHTML = "";
 
-      messages.forEach(msg => {
-        const row = document.createElement("div");
-        row.className = "chat-row" + (msg.opened ? " read" : "");
-        row.dataset.id = msg.id;
+      chats.forEach(chat => {
+        const li = document.createElement("li");
+        li.className = "chat-item";
+        if (chat.status !== "unread") {
+          li.classList.add("read");
+        }
+        li.dataset.chatId = chat.id;
 
         const avatar = document.createElement("div");
-        avatar.className = "avatar " + msg.colorKey;
-        avatar.textContent = msg.name.charAt(0).toUpperCase();
+        avatar.className = "avatar";
+        avatar.textContent = chat.initial;
+        avatar.style.background = chat.color.value;
 
-        if (!msg.opened) {
-          const dot = document.createElement("div");
-          dot.className = "avatar-unread-dot";
-          avatar.appendChild(dot);
-        }
+        const texts = document.createElement("div");
+        texts.className = "chat-texts";
 
-        const main = document.createElement("div");
-        main.className = "chat-main";
-
-        const top = document.createElement("div");
-        top.className = "chat-top";
+        const topRow = document.createElement("div");
+        topRow.className = "chat-top-row";
 
         const nameEl = document.createElement("div");
-        nameEl.className = "chat-name" + (!msg.opened ? " unread" : "");
-        nameEl.textContent = msg.name;
+        nameEl.className = "chat-name";
+        nameEl.textContent = chat.name;
 
-        const meta = document.createElement("div");
-        meta.className = "chat-meta";
-        meta.textContent = msg.timeStr;
+        const timeEl = document.createElement("div");
+        timeEl.className = "chat-time";
+        timeEl.textContent = chat.timeStr + " Uhr";
 
-        if (!msg.answered && !msg.opened) {
-          const badge = document.createElement("span");
-          badge.className = "badge-new";
-          badge.textContent = "neu";
-          meta.appendChild(badge);
-        } else if (msg.answered && msg.punctual) {
-          const badge = document.createElement("span");
-          badge.className = "badge-done";
-          badge.textContent = "pünktlich";
-          meta.appendChild(badge);
-        } else if (msg.answered && !msg.punctual) {
-          const badge = document.createElement("span");
-          badge.className = "badge-miss";
-          badge.textContent = "nicht geschafft";
-          meta.appendChild(badge);
-        }
+        topRow.appendChild(nameEl);
+        topRow.appendChild(timeEl);
 
-        top.appendChild(nameEl);
-        top.appendChild(meta);
+        const previewRow = document.createElement("div");
+        previewRow.className = "chat-preview-row";
 
         const preview = document.createElement("div");
         preview.className = "chat-preview";
-        preview.textContent = msg.text;
 
-        main.appendChild(top);
-        main.appendChild(preview);
+        if (chat.status === "ok") {
+          preview.textContent = "✔ Termin geschafft.";
+        } else if (chat.status === "fail") {
+          preview.textContent = "✖ Termin verpasst.";
+        } else {
+          preview.textContent = chat.phrase;
+        }
 
-        row.appendChild(avatar);
-        row.appendChild(main);
+        previewRow.appendChild(preview);
 
-        row.addEventListener("click", () => openMessage(msg.id));
+        if (chat.status === "unread") {
+          const dot = document.createElement("div");
+          dot.className = "unread-dot";
+          previewRow.appendChild(dot);
+        } else {
+          const tag = document.createElement("div");
+          tag.className = "status-tag " + (chat.status === "ok" ? "status-ok" : "status-fail");
+          tag.textContent = chat.status === "ok" ? "Pünktlich" : "Nicht pünktlich";
+          previewRow.appendChild(tag);
+        }
 
-        chatListEl.appendChild(row);
+        texts.appendChild(topRow);
+        texts.appendChild(previewRow);
+
+        li.appendChild(avatar);
+        li.appendChild(texts);
+
+        li.addEventListener("click", () => openChat(chat.id));
+
+        listEl.appendChild(li);
       });
     }
 
-    // ------------------------------
-    // Overlay-Farben
-    // ------------------------------
-    function getColorByKey(key) {
-      switch (key) {
-        case "blue":   return "rgb(0, 101, 171)";
-        case "violet": return "rgb(170, 0, 120)";
-        case "green":  return "rgb(59, 165, 43)";
-        case "orange": return "rgb(242, 150, 0)";
-        default:       return "rgb(15, 23, 42)";
-      }
+    function updatePointsDisplay() {
+      const el = document.getElementById("points-total");
+      el.textContent = String(points);
     }
 
-    function createTint(colorRgbString, alpha) {
-      // colorRgbString: "rgb(r,g,b)"
-      const m = colorRgbString.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-      if (!m) return `rgba(15,23,42,${alpha})`;
-      const r = m[1], g = m[2], b = m[3];
-      return `rgba(${r},${g},${b},${alpha})`;
+    // -----------------------------
+    // Nachricht öffnen / schließen
+    // -----------------------------
+    function openChat(chatId) {
+      const chat = chats.find(c => c.id === chatId);
+      if (!chat) return;
+
+      currentChatId = chatId;
+
+      const msgView = document.getElementById("message-view");
+      const msgCard = document.getElementById("msg-card");
+      const msgAvatar = document.getElementById("msg-avatar");
+      const msgName = document.getElementById("msg-name");
+      const msgTimeLine = document.getElementById("msg-time-line");
+      const msgBody = document.getElementById("msg-body");
+
+      msgAvatar.textContent = chat.initial;
+      msgAvatar.style.background = chat.color.value;
+
+      msgName.textContent = chat.name;
+      msgTimeLine.textContent = `Treffen um ${chat.timeStr} Uhr`;
+
+      msgBody.innerHTML = "";
+      const p1 = document.createElement("p");
+      p1.textContent = `Treffen um ${chat.timeStr} Uhr.`;
+      const p2 = document.createElement("p");
+      p2.textContent = chat.phrase;
+      const p3 = document.createElement("p");
+      p3.textContent = `Liebe Grüße, ${chat.name}.`;
+
+      msgBody.appendChild(p1);
+      msgBody.appendChild(p2);
+      msgBody.appendChild(p3);
+
+      // leichte Farbtönung im Kartenrand
+      msgCard.style.border = "1px solid rgba(148,163,184,0.7)";
+      msgCard.style.background = "#ffffff";
+
+      msgView.style.display = "flex";
+      msgView.classList.remove("hidden");
     }
 
-    // ------------------------------
-    // KIPPBOX-Intro anzeigen
-    // ------------------------------
-    function showIntro() {
-      openedMessageId = "intro";
-
-      const baseColor = getColorByKey("blue");
-      const headerColor = createTint(baseColor, 0.86);
-      const bodyColor   = createTint(baseColor, 0.16);
-
-      msgHeaderEl.style.background = headerColor;
-      msgBodyEl.style.background   = bodyColor;
-      msgFooterEl.style.background = bodyColor;
-
-      msgAvatarEl.style.background = baseColor;
-      msgAvatarEl.textContent = "K";
-      msgNameEl.textContent   = "KIPPBOX";
-      msgSubEl.textContent    = "Spielerklärung für KIPP O'CLOCK";
-
-      msgBodyEl.innerHTML = `
-        <p>Hallo, ich bin deine KIPPBOX.</p>
-        <p>Mein Rand zeigt, wie bei einer Uhr, die Minutenangaben in Viertelstunden. Der Würfel gibt die Stunden an.</p>
-        <p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten und liest die Uhrzeit im Text.</p>
-        <p>Sag danach an, wie oft du den Würfel im Uhrzeigersinn kippen möchtest.</p>
-        <p><strong>Hinweis:</strong> Nach zwölf Kippbewegungen liegt der Würfel wieder so wie am Anfang. (Gar nicht kippen ist zwölfmal kippen.)</p>
-        <p>Nach deiner Ansage kippst du den Würfel genauso oft, wie du angesagt hast.</p>
-        <p>Prüfe dann, ob die richtige Stunde an der richtigen Minutenangabe liegt.</p>
-        <p>Hast du den Termin geschafft, klickst du „Ich bin da“ und bekommst einen Pünktlichkeitspunkt.</p>
-        <p>Wenn nicht, klickst du „Hab's nicht geschafft“ und erhältst keinen Punkt.</p>
-        <p>Schließe die Nachricht wieder, dein Spielzug ist abgeschlossen.</p>
-      `;
-
-      msgFooterEl.className = "msg-footer intro-footer";
-      msgFooterEl.innerHTML = "";
-
-      const okBtn = document.createElement("button");
-      okBtn.className = "btn btn-primary btn-full";
-      okBtn.textContent = "Verstanden";
-      okBtn.addEventListener("click", closeOverlay);
-
-      msgFooterEl.appendChild(okBtn);
-
-      overlayEl.classList.add("visible");
+    function closeMessageView() {
+      const msgView = document.getElementById("message-view");
+      msgView.style.display = "none";
+      msgView.classList.add("hidden");
+      currentChatId = null;
     }
 
-    // ------------------------------
-    // Nachricht öffnen
-    // ------------------------------
-    function openMessage(id) {
-      const msg = messages.find(m => m.id === id);
-      if (!msg) return;
+    function handleResponse(type) {
+      if (!currentChatId) return;
+      const chat = chats.find(c => c.id === currentChatId);
+      if (!chat) return;
 
-      openedMessageId = msg.id;
-
-      msg.opened = true;
-
-      const baseColor = getColorByKey(msg.colorKey);
-      const headerColor = createTint(baseColor, 0.9);
-      const bodyColor   = createTint(baseColor, 0.16);
-
-      msgHeaderEl.style.background = headerColor;
-      msgBodyEl.style.background   = bodyColor;
-      msgFooterEl.style.background = bodyColor;
-
-      msgAvatarEl.style.background = baseColor;
-      msgAvatarEl.textContent = msg.name.charAt(0).toUpperCase();
-
-      msgNameEl.textContent = msg.name;
-      msgSubEl.textContent  = "Treffen um " + msg.timeStr;
-
-      msgBodyEl.innerHTML = `
-        <p>Neue Nachricht von ${msg.name}:</p>
-        <p><strong>${msg.text}</strong></p>
-        <p>Wenn du an der Reihe bist, lies die Uhrzeit, sag deine Kippanzahl laut an und kippe den Würfel im Uhrzeigersinn.</p>
-      `;
-
-      msgFooterEl.className = "msg-footer";
-      msgFooterEl.innerHTML = "";
-
-      const btnHere = document.createElement("button");
-      btnHere.className = "btn btn-primary";
-      btnHere.textContent = "Ich bin da";
-
-      const btnMiss = document.createElement("button");
-      btnMiss.className = "btn btn-secondary";
-      btnMiss.textContent = "Hab's nicht geschafft";
-
-      if (msg.answered) {
-        btnHere.disabled = true;
-        btnMiss.disabled = true;
-      } else {
-        btnHere.addEventListener("click", () => {
-          handleAnswer(msg, true);
-        });
-        btnMiss.addEventListener("click", () => {
-          handleAnswer(msg, false);
-        });
+      if (type === "ok" && chat.status !== "ok") {
+        points += 1;
       }
 
-      msgFooterEl.appendChild(btnHere);
-      msgFooterEl.appendChild(btnMiss);
-
-      overlayEl.classList.add("visible");
+      chat.status = type === "ok" ? "ok" : "fail";
+      chat.result = type;
+      updatePointsDisplay();
       renderChatList();
-      updateScoreDisplays();
+      closeMessageView();
     }
 
-    // ------------------------------
-    // Antwort-Logik
-    // ------------------------------
-    function handleAnswer(msg, punctual) {
-      if (msg.answered) {
-        closeOverlay();
-        return;
-      }
-
-      msg.answered = true;
-      msg.punctual = punctual;
-
-      answeredMessages += 1;
-      if (punctual) {
-        punctualPoints += 1;
-      }
-
-      updateScoreDisplays();
-      renderChatList();
-      closeOverlay();
+    // -----------------------------
+    // KIPPBOX-Overlay
+    // -----------------------------
+    function openKippboxOverlay() {
+      const overlay = document.getElementById("kippbox-overlay");
+      const avatar = document.getElementById("kippbox-avatar");
+      avatar.style.background = "var(--koc-blue)";
+      overlay.style.display = "flex";
     }
 
-    function closeOverlay() {
-      overlayEl.classList.remove("visible");
-      openedMessageId = null;
+    function closeKippboxOverlay() {
+      const overlay = document.getElementById("kippbox-overlay");
+      overlay.style.display = "none";
     }
 
-    // ------------------------------
-    // Events
-    // ------------------------------
-    msgCloseBtn.addEventListener("click", closeOverlay);
-
-    overlayEl.addEventListener("click", (e) => {
-      if (e.target === overlayEl) {
-        closeOverlay();
-      }
-    });
-
-    // ------------------------------
+    // -----------------------------
     // Init
-    // ------------------------------
+    // -----------------------------
     function init() {
-      punctualPoints = 0;
-      answeredMessages = 0;
-      updateScoreDisplays();
-      createRandomMessages();
+      createChats(6);
       renderChatList();
-      showIntro();
+      updatePointsDisplay();
+      openKippboxOverlay();
+
+      // Events
+      document.getElementById("kippbox-ok-btn").addEventListener("click", closeKippboxOverlay);
+      document.getElementById("kippbox-close").addEventListener("click", closeKippboxOverlay);
+
+      document.getElementById("msg-close").addEventListener("click", closeMessageView);
+      document.getElementById("btn-ok").addEventListener("click", () => handleResponse("ok"));
+      document.getElementById("btn-fail").addEventListener("click", () => handleResponse("fail"));
+
+      // Schließen per Klick auf dunklen Rand außerhalb der Karte (optional)
+      document.getElementById("message-view").addEventListener("click", (e) => {
+        if (e.target.id === "message-view") {
+          closeMessageView();
+        }
+      });
     }
 
-    document.addEventListener("DOMContentLoaded", init);
+    init();
   </script>
 </body>
 </html>
