@@ -11,8 +11,8 @@
       --kc-violet: rgb(164, 27, 133);
       --kc-green: rgb(0, 166, 82);
       --kc-yellow: rgb(249, 150, 30);
-      --kc-bg: #0b1120;
-      --kc-card: #0f172a;
+      --kc-bg: #020617;
+      --kc-card: #0b1220;
       --kc-border: #1e293b;
       --kc-text: #e5e7eb;
       --kc-muted: #9ca3af;
@@ -115,6 +115,11 @@
       background: #020617;
       display: flex;
       flex-direction: column;
+      transition: opacity 0.15s ease-out;
+    }
+
+    .chat-list.dimmed {
+      opacity: 0.65;
     }
 
     .chat-list-header {
@@ -145,7 +150,7 @@
     }
 
     .chat-item.active {
-      background: rgba(15, 23, 42, 1);
+      background: rgba(17, 24, 39, 1);
     }
 
     .chat-avatar {
@@ -221,6 +226,11 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.4);
+    }
+
+    .chat-window.open {
+      background: #0f172a;
     }
 
     .chat-window-header {
@@ -230,6 +240,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      background: linear-gradient(90deg, #0b1120, #0f172a);
     }
 
     .chat-header-left {
@@ -280,6 +291,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 55%);
     }
 
     .system-hint {
@@ -306,13 +318,14 @@
 
     .bubble-from {
       align-self: flex-start;
-      background: #020617;
+      background: rgba(59, 130, 246, 0.16); /* zart hellblau */
       border-radius: 18px 18px 18px 4px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(56, 189, 248, 0.9);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.8);
     }
 
     .bubble-time {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       margin-top: 6px;
       color: var(--kc-yellow);
       font-weight: 700;
@@ -330,6 +343,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      background: #020617;
     }
 
     .button-row {
@@ -422,13 +436,13 @@
 
     <div class="messenger">
       <!-- Chatliste -->
-      <aside class="chat-list">
+      <aside class="chat-list" id="chatListWrapper">
         <div class="chat-list-header">Nachrichten</div>
         <div class="chat-list-body" id="chatList"></div>
       </aside>
 
       <!-- Chatfenster -->
-      <section class="chat-window">
+      <section class="chat-window" id="chatWindow">
         <div class="chat-window-header" id="chatHeader" style="display:none;">
           <div class="chat-header-left">
             <div class="chat-avatar" id="headerAvatar"></div>
@@ -468,13 +482,6 @@
     // Grunddaten: Chats / Kontakte
     // -------------------------------
 
-    const palette = [
-      "var(--kc-blue)",
-      "var(--kc-violet)",
-      "var(--kc-green)",
-      "var(--kc-yellow)"
-    ];
-
     function createTimeList() {
       const times = [];
       // von 08:00 bis 19:45 in 15-Minuten-Schritten
@@ -508,7 +515,7 @@
         unread: true,
         answered: false,
         system: true,
-        preview: "So funktioniert dein Pünktlichkeits-Kipp.",
+        preview: "So funktioniert dein Pünktlichkeits-Kipp."
       },
       {
         id: "oma",
@@ -517,7 +524,7 @@
         color: "var(--kc-violet)",
         unread: true,
         answered: false,
-        system: false,
+        system: false
       },
       {
         id: "opa",
@@ -526,7 +533,7 @@
         color: "var(--kc-blue)",
         unread: true,
         answered: false,
-        system: false,
+        system: false
       },
       {
         id: "mama",
@@ -535,7 +542,7 @@
         color: "var(--kc-green)",
         unread: true,
         answered: false,
-        system: false,
+        system: false
       },
       {
         id: "papa",
@@ -544,7 +551,7 @@
         color: "var(--kc-yellow)",
         unread: true,
         answered: false,
-        system: false,
+        system: false
       },
       {
         id: "lara",
@@ -553,7 +560,7 @@
         color: "var(--kc-violet)",
         unread: true,
         answered: false,
-        system: false,
+        system: false
       },
       {
         id: "fabian",
@@ -562,13 +569,13 @@
         color: "var(--kc-blue)",
         unread: true,
         answered: false,
-        system: false,
+        system: false
       }
     ];
 
-    // Jeder Nicht-System-Chat bekommt eine eigene Treffzeit und Vorschautext
-    const friendChats = chats.filter(c => !c.system);
-    friendChats.forEach((chat, index) => {
+    // Meetingzeiten für alle Nicht-System-Chats
+    const friendChatsInitial = chats.filter(c => !c.system);
+    friendChatsInitial.forEach((chat, index) => {
       const time = allTimes[index] || "18:00";
       chat.meetingTime = time;
       chat.preview = `Treffen um ${time} – sei pünktlich.`;
@@ -579,9 +586,11 @@
     // -------------------------------
     let currentChatId = null;
     let score = 0;
-    const maxPunctual = friendChats.length; // 6
+
+    const maxPunctual = friendChatsInitial.length; // 6
 
     const chatListEl      = document.getElementById("chatList");
+    const chatListWrapEl  = document.getElementById("chatListWrapper");
     const chatBodyEl      = document.getElementById("chatBody");
     const chatHeaderEl    = document.getElementById("chatHeader");
     const chatFooterEl    = document.getElementById("chatFooter");
@@ -596,6 +605,7 @@
     const scoreInfoEl     = document.getElementById("scoreInfo");
     const summaryBannerEl = document.getElementById("summaryBanner");
     const summaryPointsEl = document.getElementById("summaryPoints");
+    const chatWindowEl    = document.getElementById("chatWindow");
 
     // -------------------------------
     // Rendering Chatliste
@@ -660,11 +670,16 @@
       if (!chat) return;
 
       chat.unread = false;
+      chatWindowEl.classList.add("open");
+      chatListWrapEl.classList.add("dimmed");
+
       renderChatList();
       renderChatWindow(chat);
     }
 
     function closeChat() {
+      const wasSystem = currentChatId === "system";
+
       currentChatId = null;
       chatHeaderEl.style.display = "none";
       chatFooterEl.style.display = "none";
@@ -673,6 +688,15 @@
           Wähle eine Nachricht aus der Liste, um zu kippen.
         </div>
       `;
+      chatWindowEl.classList.remove("open");
+      chatListWrapEl.classList.remove("dimmed");
+
+      // Systemnachricht nach dem Schließen aus der Liste entfernen,
+      // damit nur noch 6 ungeöffnete Nachrichten übrig bleiben.
+      if (wasSystem) {
+        chats = chats.filter(c => !c.system);
+      }
+
       renderChatList();
     }
 
@@ -703,19 +727,21 @@
         sysBubble.innerHTML = `
           <strong>Hallo, ich bin KIPP O' CLOCK.</strong><br><br>
           Wenn du an der Reihe bist, öffne eine Nachricht, lies die Uhrzeit
-          und sag laut, wie oft du kippen willst (1–12).<br><br>
-          Kippe den Würfel in der Kipp-Box im Uhrzeigersinn genau so oft.
+          im Text und nimm die Kipp-Box zur Hand.<br><br>
+          <strong>Sag vor dem Kippen an</strong>, wie oft du kippen möchtest (1–12).
+          Kippe den Würfel anschließend genau so oft im <strong>Uhrzeigersinn</strong>.<br><br>
           Triffst du die Uhrzeit, tippst du <strong>„Ich bin da“</strong> und bekommst
           einen Pünktlichkeitspunkt. Wenn nicht, tippst du
           <strong>„Hab's nicht geschafft“</strong>.<br><br>
-          Nach <strong>12 Kippbewegungen</strong> liegt der Würfel wieder wie am Anfang –
-          mehr Kipp bringt nichts.
+          <strong>12 Kippbewegungen</strong> entsprechen einer vollen Runde.
+          Danach liegt der Würfel wieder wie am Anfang.
         `;
         chatBodyEl.appendChild(sysBubble);
 
         const hint = document.createElement("div");
         hint.className = "system-hint";
-        hint.textContent = "Schließe diese Nachricht mit dem ✕ und wähle dann eine Person aus der Liste.";
+        hint.textContent =
+          "Schließe diese Nachricht mit dem ✕ und wähle dann eine Person aus der Liste.";
         chatBodyEl.appendChild(hint);
 
       } else {
@@ -728,25 +754,24 @@
 
         bubble.innerHTML = `
           <div><strong>Neue Nachricht:</strong></div>
-          <div style="margin-top:6px;">
-            Treffen um <span class="bubble-time">${timeText}</span>. Sei pünktlich!
-          </div>
+          <div class="bubble-time">Treffen um ${timeText}. Sei pünktlich!</div>
           <div class="bubble-note">
-            Nimm die Kipp-Box, sag deine Kippanzahl an (1–12) und kippe
+            Sag zuerst laut an, wie oft du kippen willst (1–12) und kippe
             im Uhrzeigersinn. Triffst du genau diese Uhrzeit?
           </div>
         `;
         chatBodyEl.appendChild(bubble);
 
         if (chat.answered) {
-          // Bereits beantwortet → Buttons deaktiviert
           btnHere.disabled = true;
           btnFail.disabled = true;
-          chatInfoLineEl.textContent = "Diese Nachricht hast du bereits beantwortet.";
+          chatInfoLineEl.textContent =
+            "Diese Nachricht hast du bereits beantwortet.";
         } else {
           btnHere.disabled = false;
           btnFail.disabled = false;
-          chatInfoLineEl.textContent = "Kippe zuerst, dann antworte: Warst du pünktlich?";
+          chatInfoLineEl.textContent =
+            "Kippe zuerst, dann antworte: Warst du pünktlich?";
         }
       }
     }
@@ -772,37 +797,23 @@
       }
     }
 
-    btnHere.addEventListener("click", () => {
+    function handleAnswer(isPunctual) {
       if (!currentChatId) return;
       const chat = chats.find(c => c.id === currentChatId);
       if (!chat || chat.system || chat.answered) return;
 
-      // Pünktlich
       chat.answered = true;
-      score += 1;
+      if (isPunctual) {
+        score += 1;
+      }
       updateScoreDisplay();
       checkFinished();
-
-      // Chat schließen wie in einem Messenger
       closeChat();
-    });
+    }
 
-    btnFail.addEventListener("click", () => {
-      if (!currentChatId) return;
-      const chat = chats.find(c => c.id === currentChatId);
-      if (!chat || chat.system || chat.answered) return;
-
-      // Nicht geschafft, kein Punkt
-      chat.answered = true;
-      updateScoreDisplay();
-      checkFinished();
-
-      closeChat();
-    });
-
-    chatCloseBtn.addEventListener("click", () => {
-      closeChat();
-    });
+    btnHere.addEventListener("click", () => handleAnswer(true));
+    btnFail.addEventListener("click", () => handleAnswer(false));
+    chatCloseBtn.addEventListener("click", () => closeChat());
 
     // -------------------------------
     // Start: Systemchat geöffnet
@@ -810,7 +821,6 @@
     function init() {
       updateScoreDisplay();
       renderChatList();
-      // System-Nachricht gleich öffnen
       openChat("system");
     }
 
