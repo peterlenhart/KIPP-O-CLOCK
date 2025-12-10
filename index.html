@@ -220,7 +220,6 @@
       width: 100%;
       max-width: 520px;
       border-radius: 24px;
-      background: #ffffff;
       position: relative;
       padding: 14px 14px 12px;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
@@ -230,18 +229,22 @@
       gap: 10px;
     }
 
-    /* Rahmenfarbe (20% Akzent) – per Theme */
+    /* Rahmenfarbe (Border 20% Akzent) – per Theme */
     .message-card.theme-violet {
       border: 2px solid rgba(164, 27, 133, 0.2);
+      background: rgba(164, 27, 133, 0.20);   /* 20% Masterfarbe */
     }
     .message-card.theme-blue {
       border: 2px solid rgba(0, 107, 179, 0.2);
+      background: rgba(0, 107, 179, 0.20);
     }
     .message-card.theme-green {
       border: 2px solid rgba(0, 166, 82, 0.2);
+      background: rgba(0, 166, 82, 0.20);
     }
     .message-card.theme-yellow {
       border: 2px solid rgba(249, 150, 30, 0.2);
+      background: rgba(249, 150, 30, 0.20);
     }
 
     .message-close {
@@ -491,13 +494,14 @@
       timeLabel: "",
       status: "unread",
       text: `
-<p>Hallo, ich bin deine KIPPBOX.</p>
-<p>Mein Rand zeigt, wie bei einer Uhr, die Minutenangaben in Viertelstunden. Der Würfel gibt die Stunden an.</p>
-<p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten und liest die Uhrzeit im Text. Sag danach an, wie oft du den Würfel im Uhrzeigersinn kippen möchtest.</p>
+<p><strong>Hallo, ich bin deine KIPPBOX.</strong></p>
+<p>Mein Rand zeigt, wie bei einer Uhr, die <strong>Minutenangaben</strong> in Viertelstunden. Der Würfel gibt die <strong>Stunden</strong> an.</p>
+<p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten und liest die <strong>Uhrzeit</strong> im Text. Sag danach an, wie oft du den Würfel im <strong>Uhrzeigersinn</strong> kippen möchtest.</p>
 <p><strong>Hinweis:</strong> Nach zwölf Kippbewegungen liegt der Würfel wieder so wie am Anfang (gar nicht kippen ist zwölfmal kippen).</p>
-<p>Nach deiner Ansage kippst du den Würfel genauso oft, wie du angesagt hast. Prüfe dann, ob die richtige Stunde an der richtigen Minutenangabe liegt.</p>
-<p>Hast du den Termin geschafft, klickst du „Ich bin da“ und bekommst einen Pünktlichkeitspunkt. Wenn nicht, klickst du „Hab's nicht geschafft“ und erhältst keinen Punkt.</p>
+<p>Nach deiner Ansage kippst du den Würfel genauso oft, wie du angesagt hast. Prüfe dann, ob die richtige <strong>Stunde</strong> an der richtigen <strong>Minutenangabe</strong> liegt.</p>
+<p>Hast du den <strong>Termin</strong> geschafft, klickst du „<strong>Ich bin da</strong>“ und bekommst einen <strong>Pünktlichkeitspunkt</strong>. Wenn nicht, klickst du „<strong>Hab's nicht geschafft</strong>“ und erhältst keinen Punkt.</p>
 <p>Schließe die Nachricht wieder, dein Spielzug ist abgeschlossen.</p>
+<p>Viel Spannung, Spaß und Kopfzerbrechen bei <strong>KIPP O' CLOCK</strong>.</p>
       `.trim()
     };
 
