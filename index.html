@@ -227,24 +227,25 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      background: #ffffff; /* weiße Basis bleibt */
     }
 
-    /* Rahmenfarbe (Border 20% Akzent) – per Theme */
+    /* Rahmenfarbe: Border + 20%-Tönung über Weiß (vorgeblendet, sehr hell) */
     .message-card.theme-violet {
       border: 2px solid rgba(164, 27, 133, 0.2);
-      background: rgba(164, 27, 133, 0.20);   /* 20% Masterfarbe */
+      background: rgb(237, 209, 231); /* Weiß + 20% Violett */
     }
     .message-card.theme-blue {
       border: 2px solid rgba(0, 107, 179, 0.2);
-      background: rgba(0, 107, 179, 0.20);
+      background: rgb(204, 225, 240); /* Weiß + 20% Blau */
     }
     .message-card.theme-green {
       border: 2px solid rgba(0, 166, 82, 0.2);
-      background: rgba(0, 166, 82, 0.20);
+      background: rgb(204, 237, 220); /* Weiß + 20% Grün */
     }
     .message-card.theme-yellow {
       border: 2px solid rgba(249, 150, 30, 0.2);
-      background: rgba(249, 150, 30, 0.20);
+      background: rgb(254, 234, 210); /* Weiß + 20% Gelb */
     }
 
     .message-close {
@@ -320,7 +321,7 @@
     .message-body-outer {
       border-radius: 18px;
       padding: 10px 10px 8px;
-      background: #ffffff; /* weiße Basis */
+      background: #ffffff; /* weiße Innenfläche bleibt */
     }
 
     .message-card.theme-violet .message-body-inner {
@@ -495,12 +496,12 @@
       status: "unread",
       text: `
 <p><strong>Hallo, ich bin deine KIPPBOX.</strong></p>
-<p>Mein Rand zeigt, wie bei einer Uhr, die <strong>Minutenangaben</strong> in Viertelstunden. Der Würfel gibt die <strong>Stunden</strong> an.</p>
-<p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten und liest die <strong>Uhrzeit</strong> im Text. Sag danach an, wie oft du den Würfel im <strong>Uhrzeigersinn</strong> kippen möchtest.</p>
+<p>Meine Umrahmung zeigt, wie bei einer Uhr, die <strong>Minutenangaben</strong> in Viertelstunden. Der Würfel gibt die <strong>Stunden</strong> an.</p>
+<p>Wenn du an der Reihe bist, öffnest du eine deiner Nachrichten und liest die <strong>Uhrzeit</strong> im Text. Sag danach an, wie oft du den Würfel <strong>im Uhrzeigersinn</strong> kippen möchtest.</p>
 <p><strong>Hinweis:</strong> Nach zwölf Kippbewegungen liegt der Würfel wieder so wie am Anfang (gar nicht kippen ist zwölfmal kippen).</p>
 <p>Nach deiner Ansage kippst du den Würfel genauso oft, wie du angesagt hast. Prüfe dann, ob die richtige <strong>Stunde</strong> an der richtigen <strong>Minutenangabe</strong> liegt.</p>
-<p>Hast du den <strong>Termin</strong> geschafft, klickst du „<strong>Ich bin da</strong>“ und bekommst einen <strong>Pünktlichkeitspunkt</strong>. Wenn nicht, klickst du „<strong>Hab's nicht geschafft</strong>“ und erhältst keinen Punkt.</p>
-<p>Schließe die Nachricht wieder, dein Spielzug ist abgeschlossen.</p>
+<p>Hast du den Termin geschafft, klickst du „<strong>Ich bin da</strong>“ und bekommst einen <strong>Pünktlichkeitspunkt</strong>. Wenn nicht, klickst du „<strong>Hab's nicht geschafft</strong>“ und erhältst keinen Punkt.</p>
+<p>Danach ist dein Spielzug abgeschlossen und du kannst die Nachricht wieder schließen.</p>
 <p>Viel Spannung, Spaß und Kopfzerbrechen bei <strong>KIPP O' CLOCK</strong>.</p>
       `.trim()
     };
